@@ -15,6 +15,17 @@ class Login extends Component {
     email: "arno@airbnb-api.com",
     password: "password01"
   };
+  static navigationOptions = {
+    title: "LogIn",
+    headerStyle: {
+      backgroundColor: "#fc5c63"
+    },
+    headerTitleStyle: {
+      fontSize: 24,
+      color: "white",
+      fontWeight: "200"
+    }
+  };
 
   handleSubmit = () => {
     const { email, password } = this.state;
@@ -37,10 +48,18 @@ class Login extends Component {
         }
       )
       .then(response => {
-        // console.log(response.data);
+        // response
+        // {data: {…}, status: 200, statusText: undefined, headers: {…}, config: {…}, …}
+        // config: {adapter: ƒ, transformRequest: {…}, transformResponse: {…}, timeout: 0, xsrfCookieName: "XSRF-TOKEN", …}
+        // data: {_id: "58ff73cc1765a998979a338e", token: "8piJbT3gYzYKgzuo", account: {…}}
+        // headers: {x-now-instance: "3610843547", cache-control: "s-maxage=0", x-download-options: "noopen", now: "1", vary: "Accept-Encoding", …}
+        // request: XMLHttpRequest {UNSENT: 0, OPENED: 1, HEADERS_RECEIVED: 2, LOADING: 3, DONE: 4, …}
+        // status: 200
+        // statusText: undefined
+        // __proto__: Object
         console.log("response", response);
         if (response) {
-          navigate("Home");
+          navigate("List");
         }
       })
       .catch(error => {
@@ -50,16 +69,19 @@ class Login extends Component {
 
   render() {
     console.log("this.state", this.state);
+    // this.state
+    // email: "arno@airbnb-api.com"
+    // password: "password01"
     return (
       <KeyboardAvoidingView behavior={"padding"} style={styles.loginContainer}>
         <Image
           style={styles.logo}
-          source={require("../../assets/logo-airbnb.png")}
+          source={require("../../assets/images/logo-airbnb.png")}
         />
         <Text style={styles.homeTitle}>Welcome</Text>
 
         <TextInput
-          style={styles.email}
+          style={styles.inputCell}
           value={this.state.email}
           onChangeText={value => {
             this.setState({
@@ -68,7 +90,7 @@ class Login extends Component {
           }}
         />
         <TextInput
-          style={styles.password}
+          style={styles.inputCell}
           value={this.state.password}
           secureTextEntry={true}
           onChangeText={value => {
@@ -79,11 +101,8 @@ class Login extends Component {
         />
         <TouchableOpacity
           style={styles.button}
-          title="Go to Apartment page"
+          title="Go to List"
           onPress={this.handleSubmit}
-          // onPress={() => {
-          //   this.props.navigation.navigate("Apartment");
-          // }}
         >
           <Text style={styles.textInButton} onPress={this.handleSubmit}>
             Login
@@ -111,15 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
     color: "white"
   },
-  email: {
-    width: 250,
-    height: 60,
-    color: "white",
-    borderColor: "white",
-    borderBottomWidth: 1,
-    paddingLeft: 10
-  },
-  password: {
+  inputCell: {
     width: 250,
     height: 60,
     color: "white",
@@ -134,7 +145,6 @@ const styles = StyleSheet.create({
     width: 150,
     borderRadius: 50,
     marginTop: 50,
-    // alignItems: "center",
     justifyContent: "center"
   },
   textInButton: {
