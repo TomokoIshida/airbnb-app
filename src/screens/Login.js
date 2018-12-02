@@ -48,15 +48,6 @@ class Login extends Component {
         }
       )
       .then(response => {
-        // response
-        // {data: {…}, status: 200, statusText: undefined, headers: {…}, config: {…}, …}
-        // config: {adapter: ƒ, transformRequest: {…}, transformResponse: {…}, timeout: 0, xsrfCookieName: "XSRF-TOKEN", …}
-        // data: {_id: "58ff73cc1765a998979a338e", token: "8piJbT3gYzYKgzuo", account: {…}}
-        // headers: {x-now-instance: "3610843547", cache-control: "s-maxage=0", x-download-options: "noopen", now: "1", vary: "Accept-Encoding", …}
-        // request: XMLHttpRequest {UNSENT: 0, OPENED: 1, HEADERS_RECEIVED: 2, LOADING: 3, DONE: 4, …}
-        // status: 200
-        // statusText: undefined
-        // __proto__: Object
         console.log("response", response);
         if (response) {
           navigate("List");
@@ -128,7 +119,8 @@ const styles = StyleSheet.create({
   homeTitle: {
     marginVertical: 70,
     fontSize: 48,
-    color: "white"
+    color: "white",
+    fontWeight: "200"
   },
   inputCell: {
     width: 250,

@@ -1,5 +1,13 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Image,
+  ImageBackground
+} from "react-native";
+import MapView from "react-native-maps";
 import axios from "axios";
 
 export default class Room extends Component {
@@ -21,78 +29,101 @@ export default class Room extends Component {
 
   // function permettant d'ajouter des étoiles jaunes correspondant à la note
   rateStars(value) {
-  const stars = [];
-  for (let i = 0; i < 5; i++) {
-    if (i < value) {
-      stars.push(
-        <Image
-          key={i}
-          source={require("../../assets/images/star-filled.png")}
-        />
-      );
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      if (i < value) {
+        stars.push(
+          <Image
+            key={i}
+            source={require("../../assets/images/star-filled.png")}
+          />
+        );
       } else {
-      stars.push(
-        <Image
-          key={i}
-          source={require("../../assets/images/star-empty.png")}
-        />
+        stars.push(
+          <Image
+            key={i}
+            source={require("../../assets/images/star-empty.png")}
+          />
+        );
+      }
+    }
+    return stars;
+  }
+
+  render() {
+    console.log("this.state.room.user._id", this.state.room.user._id);
+    // on vérifie que le this.state n'est pas vide
+    // si le this.state contient les données de l'appartement
+
+    if (this.state.room.user._id !== undefined) {
+      return (
+        <ScrollView style={styles.roomContainer}>
+          <View style={styles.roomCard}>
+            <ImageBackground
+              style={styles.roomPhoto}
+              source={{ uri: this.state.room.photos[0] }}
+            >
+              <Text style={styles.roomPriceCard}>
+                <Text style={styles.roomPrice}>
+                  {this.state.room.price + " "}€
+                </Text>
+              </Text>
+            </ImageBackground>
+            <View style={styles.roomRow}>
+              <View style={styles.roomLeftColumn}>
+                <Text style={styles.roomTitle}>{this.state.room.title}</Text>
+
+                <View style={styles.roomEvaluation}>
+                  <Text style={styles.roomRatingValue}>
+                    {this.rateStars(this.state.room.ratingValue)}
+                  </Text>
+                  <Text style={styles.roomReviews}>
+                    {this.state.room.reviews + " "}reviews
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.roomRightColumn}>
+                <Image
+                  style={styles.userPhoto}
+                  source={{ uri: this.state.room.user.account.photos[0] }}
+                />
+              </View>
+            </View>
+            <Text style={styles.roomDescription} numberOfLines={3}>
+              {this.state.room.description}
+            </Text>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: this.state.room.loc[0],
+                longitude: this.state.room.loc[1],
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+              }}
+            >
+              <MapView.Marker
+                coordinate={{
+                  latitude: this.state.room.loc[0],
+                  longitude: this.state.room.loc[1]
+                }}
+              />
+            </MapView>
+          </View>
+        </ScrollView>
+      );
+
+      // s'il est vide on affiche loading...
+    } else {
+      return (
+        <View style={styles.roomContainer}>
+          <Text style={styles.loading}>Loading ...</Text>
+        </View>
       );
     }
   }
-  return stars;
-  };
-
-  render() {
-    // On vérifie que le this.state n'est pas vide
-    // if (this.state.rooms.user !== undefined) {
-    return (
-      <View style={styles.roomContainer}>
-        <FlatList 
-    keyExtractor={item => {
-    return item._id;
-    }}
-    data={this.state.room}
-    renderItem={({ item }) => ( 
-        <View style={styles.roomCard}>
-          <Image style={styles.roomPhoto}
-                source={{ uri: item.photos[0] }}
-          />
-        </View>
-
-    
-        <View style={styles.roomPriceCard}>
-          <Text style={styles.roomPrice}>{item.price + " "}€</Text>
-        </View>
-        <View style={styles.roomRow}>
-          <View style={styles.roomLeftColumn}>
-            <Text style={styles.roomTitle}>{item.title}</Text>
-            <View style={styles.roomEvaluation}>
-              <Text style={styles.roomRatingValue}>
-                    {this.ratingStars(item.ratingValue)}</Text>
-             <Text style={styles.roomReviews}>
-                    {item.reviews + " "}reviews</Text>
-            </View>
-          
-          </View>
-          <Image style={styles.userPhoto} source={{ uri: item.user.account.photo[0] }} />
-        </View>
-
-        <Text style={styles.roomDescription} numberOfLines={3}>
-            {item.description}</Text>
-        
-    )}  
-    />
-      </View>
-    );
-  }
-
-  /* } else { */
-  /* s'il est vide on affiche loading...
- return <Text>Loading ...</Text>;
- } */
-  /* } */
 
   componentDidMount() {
+    // componentWillMount() {
     axios
       .get(
         // on appelle axios avec l'id récupérer via "navigate"
@@ -101,7 +132,7 @@ export default class Room extends Component {
       )
       .then(response => {
         // on envoie les infos dans le state.room
-        console.log(response.data);
+        console.log("response.data", response.data);
         this.setState({
           room: response.data
         });
@@ -110,65 +141,75 @@ export default class Room extends Component {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    color: "#FC5B63",
+    fontSize: 30,
+    fontWeight: "200",
+    textAlign: "center"
+  },
   roomContainer: {
-    marginHorizontal: 20,
-    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#A0A0A0"
+  },
+  roomPhoto: {
+    width: "100%",
+    height: 300
+  },
+  roomRow: {
+    flexDirection: "row",
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 20
+  },
+  roomLeftColumn: {
+    flex: 4
+  },
+  roomCard: {
+    position: "relative"
+  },
+  roomRightColumn: {
+    flex: 1
+  },
+  roomPriceCard: {
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    width: 90,
+    height: 60,
+    marginBottom: 5,
+    justifyContent: "center",
+
+    position: "absolute",
+    bottom: 10,
+    left: 0
+  },
+  roomPrice: {
+    color: "white",
+    fontSize: 24,
+    textAlign: "center"
+  },
+  roomTitle: {
+    fontSize: 20,
+    marginBottom: 10
+  },
+  roomEvaluation: {
+    flexDirection: "row",
+    flex: 1
+  },
+  roomRatingValue: {
+    flex: 1,
+    marginTop: 5
+  },
+  roomReviews: {
+    flex: 2,
+    fontSize: 18,
+    color: "#A0A0A0"
+  },
+  userPhoto: {
+    width: 70,
+    height: 70,
+    borderRadius: 35
+  },
+  roomDescription: {
+    fontSize: 20,
+    paddingHorizontal: 20
   }
-  // roomPhoto: {
-  //   width: "100%",
-  //   height: 200
-  // },
-  // roomRow: {
-  //   flexDirection: "row",
-  //   flex: 1,
-  //   marginTop: 20
-  // },
-  // roomLeftColumn: {
-  //   flex: 4
-  // },
-  // roomCard: {
-  //   position: "relative"
-  // },
-  // roomRightColumn: {
-  //   flex: 1
-  // },
-  // roomPriceCard: {
-  //   backgroundColor: "rgba(0, 0, 0, 0.8)",
-  //   width: 90,
-  //   height: 60,
-  //   marginBottom: 5,
-  //   justifyContent: "center",
-  //   position: "absolute",
-  //   bottom: 10,
-  //   left: 0
-  // },
-  // roomPrice: {
-  //   color: "white",
-  //   fontSize: 24,
-  //   textAlign: "center"
-  // },
-  // roomTitle: {
-  //   fontSize: 20,
-  //   marginBottom: 10
-  // },
-  // roomEvaluation: {
-  //   flexDirection: "row",
-  //   flex: 1
-  // },
-  // roomRatingValue: {
-  //   flex: 1,
-  //   marginTop: 5
-  // },
-  // roomReviews: {
-  //   flex: 2,
-  //   fontSize: 18,
-  //   color: "#A0A0A0"
-  // },
-  // userPhoto: {
-  //   width: 70,
-  //   height: 70,
-  //   borderRadius: 35
-  // }
 });

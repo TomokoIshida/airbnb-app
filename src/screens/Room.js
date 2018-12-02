@@ -1,11 +1,23 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Image,
+  ImageBackground
+} from "react-native";
+// import MapView from "react-native-maps";
 import axios from "axios";
 
 export default class Room extends Component {
+  // constructor(props) {
+  // super(props);
+  // this.state = {
   state = {
-    room: {}
+    room: null
   };
+  // }
 
   static navigationOptions = {
     title: "Room",
@@ -43,49 +55,68 @@ export default class Room extends Component {
   }
 
   render() {
-    console.log(this.state.room.user._id);
-    // On vérifie que le this.state n'est pas vide
-    if (this.state.room.user._id !== undefined) {
+    console.log("this.state.room", this.state.room);
+    // on vérifie que le this.state n'est pas vide
+    // si le this.state contient les données de l'appartement
+    if (this.state.room) {
       return (
-        <View style={styles.roomContainer}>
-          <FlatList
-            keyExtractor={item => {
-              return item._id;
-            }}
-            data={this.state.room}
-            renderItem={({ item }) => (
-              <View style={styles.roomCard}>
-                <Image
-                  style={styles.roomPhoto}
-                  source={{ uri: item.photos[0] }}
-                />
-              </View>
-
-              /* <View style={styles.roomPriceCard}>
-              <Text style={styles.roomPrice}>{item.price + " "}€</Text>
-            </View>
+        <ScrollView style={styles.roomContainer}>
+          <View style={styles.roomCard}>
+            <ImageBackground
+              style={styles.roomPhoto}
+              source={{ uri: this.state.room.photos[0] }}
+            >
+              <Text style={styles.roomPriceCard}>
+                <Text style={styles.roomPrice}>
+                  {this.state.room.price + " "}€
+                </Text>
+              </Text>
+            </ImageBackground>
             <View style={styles.roomRow}>
               <View style={styles.roomLeftColumn}>
-                <Text style={styles.roomTitle}>{item.title}</Text>
+                <Text style={styles.roomTitle}>{this.state.room.title}</Text>
+
                 <View style={styles.roomEvaluation}>
                   <Text style={styles.roomRatingValue}>
-                        {this.ratingStars(item.ratingValue)}</Text>
-                 <Text style={styles.roomReviews}>
-                        {item.reviews + " "}reviews</Text>
+                    {this.rateStars(this.state.room.ratingValue)}
+                  </Text>
+                  <Text style={styles.roomReviews}>
+                    {this.state.room.reviews + " "}reviews
+                  </Text>
                 </View>
-
               </View>
-              <Image style={styles.userPhoto} source={{ uri: item.user.account.photo[0] }} />
+              <View style={styles.roomRightColumn}>
+                <Image
+                  style={styles.userPhoto}
+                  source={{ uri: this.state.room.user.account.photos[0] }}
+                />
+              </View>
             </View>
-
             <Text style={styles.roomDescription} numberOfLines={3}>
-                {item.description}</Text> */
-            )}
-          />
-        </View>
+              {this.state.room.description}
+            </Text>
+            {/* <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: this.state.room.loc[0],
+                longitude: this.state.room.loc[1],
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+              }}
+            >
+              <MapView.Marker
+                coordinate={{
+                  latitude: this.state.room.loc[0],
+                  longitude: this.state.room.loc[1]
+                }}
+              />
+            </MapView> */}
+          </View>
+        </ScrollView>
       );
-    } else {
+
       // s'il est vide on affiche loading...
+    } else {
       return (
         <View style={styles.roomContainer}>
           <Text style={styles.loading}>Loading ...</Text>
@@ -95,6 +126,7 @@ export default class Room extends Component {
   }
 
   componentDidMount() {
+    // componentWillMount() {
     axios
       .get(
         // on appelle axios avec l'id récupérer via "navigate"
@@ -103,7 +135,7 @@ export default class Room extends Component {
       )
       .then(response => {
         // on envoie les infos dans le state.room
-        console.log(response.data);
+        console.log("response.data", response.data);
         this.setState({
           room: response.data
         });
@@ -119,20 +151,18 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   roomContainer: {
-    marginHorizontal: 20,
-    paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#A0A0A0",
-    alignItems: "center"
+    borderBottomColor: "#A0A0A0"
   },
   roomPhoto: {
     width: "100%",
-    height: 200
+    height: 250
   },
   roomRow: {
     flexDirection: "row",
     flex: 1,
-    marginTop: 20
+    paddingHorizontal: 20,
+    paddingVertical: 20
   },
   roomLeftColumn: {
     flex: 4
@@ -148,7 +178,8 @@ const styles = StyleSheet.create({
     width: 90,
     height: 60,
     marginBottom: 5,
-    justifyContent: "center",
+    paddingTop: 15,
+    // justifyContent: "center",
     position: "absolute",
     bottom: 10,
     left: 0
@@ -179,5 +210,9 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35
+  },
+  roomDescription: {
+    fontSize: 20,
+    paddingHorizontal: 20
   }
 });
