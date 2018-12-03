@@ -7,7 +7,7 @@ import {
   Image,
   ImageBackground
 } from "react-native";
-// import MapView from "react-native-maps";
+import MapView from "react-native-maps";
 import axios from "axios";
 
 export default class Room extends Component {
@@ -95,7 +95,7 @@ export default class Room extends Component {
             <Text style={styles.roomDescription} numberOfLines={3}>
               {this.state.room.description}
             </Text>
-            {/* <MapView
+            <MapView
               style={styles.map}
               initialRegion={{
                 latitude: this.state.room.loc[0],
@@ -110,7 +110,7 @@ export default class Room extends Component {
                   longitude: this.state.room.loc[1]
                 }}
               />
-            </MapView> */}
+            </MapView>
           </View>
         </ScrollView>
       );
@@ -214,5 +214,10 @@ const styles = StyleSheet.create({
   roomDescription: {
     fontSize: 20,
     paddingHorizontal: 20
+  },
+  map: {
+    flex: 1,
+    height: 300,
+    marginVertical: 30
   }
 });
