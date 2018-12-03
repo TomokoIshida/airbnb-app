@@ -98,16 +98,18 @@ export default class Room extends Component {
             <MapView
               style={styles.map}
               initialRegion={{
-                latitude: this.state.room.loc[0],
-                longitude: this.state.room.loc[1],
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421
+                // ! latitude et longitude sont souvent inversés dans la base de données
+                latitude: this.state.room.loc[1],
+                longitude: this.state.room.loc[0],
+                // plus ces valeurs sont petites, la carte plus zoomée
+                latitudeDelta: 0.00922,
+                longitudeDelta: 0.00421
               }}
             >
               <MapView.Marker
                 coordinate={{
-                  latitude: this.state.room.loc[0],
-                  longitude: this.state.room.loc[1]
+                  latitude: this.state.room.loc[1],
+                  longitude: this.state.room.loc[0]
                 }}
               />
             </MapView>
@@ -217,7 +219,8 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
-    height: 300,
-    marginVertical: 30
+    height: 150,
+    marginVertical: 30,
+    marginHorizontal: 20
   }
 });
